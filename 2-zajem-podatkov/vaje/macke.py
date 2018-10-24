@@ -69,13 +69,13 @@ def read_file_to_string(directory, filename):  #ta bo delala to, da bo prebrala 
 # pomočjo regularnih izrazov, ki označujejo začetek in konec posameznega
 # oglasa. Funkcija naj vrne seznam nizov.
 
+vzorec_bloka = re.compile(r'<div class="ad">.*?'     
+    r'<div class="clear"></div>', 
+    re.DOTALL)
 
 def page_to_ads(page):    #to so tisti bloki s posamezno reklamo
     '''Split "page" to a list of advertisement blocks.'''
-    vzorec = re.compile(r'<div class="ad">.*?' 
-        r'<div class="clear"></div>', 
-        re.DOTALL)
-    ads = re.findall(vzorec, page)
+    ads = re.findall(vzorec_bloka, page)
     return ads
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
@@ -83,7 +83,7 @@ def page_to_ads(page):    #to so tisti bloki s posamezno reklamo
 
 vzorec_reklame = re.compile(
     r'<table><tr><td><a title=(?P<ime>.+?)\s*?href=.*?'
-    r'<div class="coloumn content">\n\n.*?</a></h3>(?P<opis>.+?).*?<div class="additionalInfo">.*?'
+    r'</a></h3>(?P<opis>.+?).*?<div class="additionalInfo">.*?'
     r'<div class="price">(?P<cena>.+?)</div>.*?', 
     flags = re.DOTALL
 )
@@ -91,8 +91,9 @@ vzorec_reklame = re.compile(
 def get_dict_from_ad_block(blok):
     '''Build a dictionary containing the name, description and price
     of an ad block.'''
-    reklama = vzorec_reklame.search(blok).groupdict()
-    return reklama
+    reklama = vzorec_reklame.search(blok)
+    slovar = reklama.groupdict()
+    return reklame
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
 # besedilo spletne strani, in vrne seznam slovarjev, ki vsebujejo podatke o
