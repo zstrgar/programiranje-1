@@ -29,7 +29,7 @@ def download_url_to_string(url):
         print("Stran ne obstaja")
         return None
     # nadaljujemo s kodo če ni prišlo do napake
-    return r.text  #vrne texst
+    return r.text  #vrne texst v obliki niza
 
 
 def save_string_to_file(text, directory, filename):
@@ -38,14 +38,14 @@ def save_string_to_file(text, directory, filename):
     the current directory.'''
     os.makedirs(directory, exist_ok=True)    #ustvari direktorij, če je že tam je OK
     path = os.path.join(directory, filename) #naredi pot
-    with open(path, 'w', encoding='utf-8') as file_out:  #odpri pot za writing in kodiranje je utf, dobimo nov dokument
-        file_out.write(text)
+    with open(path, 'w', encoding='utf-8') as datoteka:  #odpri pot za writing in kodiranje je utf, dobimo nov dokument
+        datoteka.write(text)        #zapiše text v datoteko (ta text je pa prej pobrau iz neta in je niz)
     return None
 
 # Definirajte funkcijo, ki prenese glavno stran in jo shrani v datoteko.
 
 
-def save_frontpage():               #je brez argumentov, ker je to samo funkcija ki nam olajša delo
+def save_frontpage():               #je brez argumentov, ker je to samo funkcija, ki nam olajša delo
     '''Save "cats_frontpage_url" to the file
     "cat_directory"/"frontpage_filename"'''
     besedilo = download_url_to_string(cats_frontpage_url)
@@ -56,7 +56,7 @@ def save_frontpage():               #je brez argumentov, ker je to samo funkcija
 ###############################################################################
 
 
-def read_file_to_string(directory, filename):
+def read_file_to_string(directory, filename):  #ta bo delala to, da bo prebrala tisto datoteko, ki smo jo prej naredili
     '''Return the contents of the file "directory"/"filename" as a string.'''
     path = os.path.join(directory, filename)
     with open(path, 'r', encoding='utf-8') as file_in:
@@ -70,23 +70,29 @@ def read_file_to_string(directory, filename):
 # oglasa. Funkcija naj vrne seznam nizov.
 
 
-def page_to_ads(page):
+def page_to_ads(page):    #to so tisti bloki s posamezno reklamo
     '''Split "page" to a list of advertisement blocks.'''
-    vzorec = re.compile(r'<div class="ad">.*?<div class="clear"></div>', re.DOTALL)
+    vzorec = re.compile(r'<div class="ad">.*?' 
+        r'<div class="clear"></div>', 
+        re.DOTALL)
     ads = re.findall(vzorec, page)
     return ads
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
 # podatke o imenu, ceni in opisu v oglasu.
 
+vzorec_reklame = re.compile(
+    r'<table><tr><td><a title=(?P<ime>.+?)\s*?href=.*?'
+    r'<div class="coloumn content">\n\n.*?</a></h3>(?P<opis>.+?).*?<div class="additionalInfo">.*?'
+    r'<div class="price">(?P<cena>.+?)</div>.*?', 
+    flags = re.DOTALL
+)
 
-def get_dict_from_ad_block(block):
+def get_dict_from_ad_block(blok):
     '''Build a dictionary containing the name, description and price
     of an ad block.'''
-    rx = re.compile(r'<table><tr><td><a title=""', re.DOTALL)
-    data = re.search(rx, block)
-    ad_dict = data.groupdict()
-    return ad_dict
+    reklama = vzorec_reklame.search(blok).groupdict()
+    return reklama
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
 # besedilo spletne strani, in vrne seznam slovarjev, ki vsebujejo podatke o
