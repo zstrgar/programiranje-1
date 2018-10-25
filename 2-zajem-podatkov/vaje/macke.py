@@ -93,20 +93,25 @@ def get_dict_from_ad_block(blok):
     of an ad block.'''
     reklama = vzorec_reklame.search(blok)
     slovar = reklama.groupdict()
-    return reklame
+    return slovar
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
 # besedilo spletne strani, in vrne seznam slovarjev, ki vsebujejo podatke o
 # vseh oglasih strani.
 
 
-def ads_from_file():
+def ads_from_file(directory, filename):
     '''Parse the ads in filename/directory into a dictionary list.'''
     #read the file
+    page = read_file_to_string(directory, filename)
     #split the page into blocks
+    bloki = page_to_ads(page)
     #for each blok, get out the dict
+    seznam = []
+    for i in range(len(bloki)):
+        seznam.append(get_dict_from_ad_block(bloki[i]))
     #return the list of dict's
-    return TODO
+    return seznam
 
 ###############################################################################
 # Obdelane podatke želimo sedaj shraniti.
