@@ -138,5 +138,7 @@ def write_csv(fieldnames, rows, directory, filename):
 
 def write_cat_ads_to_csv(ads):
     fieldnames = ads[0].keys()
-    write_csv(fieldnames, ads, cat_directory, cat_csv_filename)
+    write_csv(fieldnames, ads, cat_directory, csv_filename)
     return None
+
+#TODO: popravi vzorec  za opis!
