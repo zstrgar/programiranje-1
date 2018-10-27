@@ -83,7 +83,7 @@ def page_to_ads(page):    #to so tisti bloki s posamezno reklamo
 
 vzorec_reklame = re.compile(
     r'<table><tr><td><a title=(?P<ime>.+?)\s*?href=.*?'
-    r'</a></h3>(?P<opis>.+?).*?<div class="additionalInfo">.*?'
+    r'</a></h3>\s*?(?P<opis>.+?)\s*?<div class="additionalInfo">.*?'
     r'<div class="price">(?P<cena>.+?)</div>.*?', 
     flags = re.DOTALL
 )
