@@ -142,3 +142,4 @@ def write_cat_ads_to_csv(ads):
     return None
 
 #TODO: popravi vzorec  za opis!
+#TODO: naredi naslednjo vajo
