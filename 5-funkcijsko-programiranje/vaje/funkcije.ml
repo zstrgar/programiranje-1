@@ -4,7 +4,19 @@
 Namig: Definirajte pomožno funkcijo za obračanje seznamov.
 [*----------------------------------------------------------------------------*)
 
-let rec reverse = ()
+(*let rec reverse xs =
+  match xs with
+  |[] -> []
+  |x :: xs -> (reverse xs) @ [x]    (* ta varjanta je počasna, ni ok*)*)
+
+let reverse xs = 
+  let rec reverse' acc xs = 
+    match xs with
+    | [] -> acc
+    | glava :: rep -> reverse'(glava :: acc) rep
+  in 
+  reverse' [] xs
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [repeat x n] vrne seznam [n] ponovitev vrednosti [x]. Za neprimerne
@@ -16,7 +28,10 @@ let rec reverse = ()
  - : string list = []
 [*----------------------------------------------------------------------------*)
 
-let rec repeat = ()
+let rec repeat x n = 
+  match n <= 0 with
+  | true -> []
+  | false -> x :: (repeat x (n-1))
 
 (*----------------------------------------------------------------------------*]
  Funkcija [range] sprejme število in vrne seznam vseh celih števil od 0 do
@@ -27,7 +42,21 @@ let rec repeat = ()
  - : int list = [0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 10]
 [*----------------------------------------------------------------------------*)
 
-let rec range = ()
+(*let range x = 
+  let rec range' x =  
+    match x < 0 with
+    |true -> []
+    |false -> x :: range'(x - 1)
+    in
+    reverse(range' x) *)
+
+let range n = 
+  let rec range_aux acc n = 
+    match n < 0 with
+    |true -> acc
+    |false -> range_aux (n :: acc) (n - 1)
+    in
+    range_aux [] n
 
 (*----------------------------------------------------------------------------*]
  Funkcija [map f list] sprejme seznam [list] oblike [x0; x1; x2; ...] in
@@ -39,7 +68,11 @@ let rec range = ()
  - : int list = [2; 3; 4; 5; 6]
 [*----------------------------------------------------------------------------*)
 
-let rec map = ()
+let rec map f list = 
+  match list with
+  | [] -> []
+  | x :: xs -> f x :: map f xs
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [map_tlrec] je repno rekurzivna različica funkcije [map].
@@ -49,7 +82,25 @@ let rec map = ()
  - : int list = [2; 3; 4; 5; 6]
 [*----------------------------------------------------------------------------*)
 
-let rec map_tlrec = ()
+(*let map_tlrec f xs = 
+  let rec map_aux acc f xs= 
+    match xs with 
+    |[] -> acc
+    |x :: xs -> map_aux(f x :: acc) f xs
+  in
+  reverse(map_aux [] f xs) *)
+
+  
+(* f nerabi bit v tej dodatni funkciji ker se med rekurzijo ne spreminja; namesto match with lahko napišeš function*)
+
+
+let map_tlrec f xs =                   
+  let rec map_aux acc xs = match xs with   
+    |[] -> reverse acc                 
+    |x :: xs -> map_aux (f x :: acc) xs
+    in
+    map_aux [] xs
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [mapi] sprejme seznam in funkcijo dveh argumentov ter vrne seznam
@@ -72,7 +123,12 @@ let rec mapi = ()
  Exception: Failure "Different lengths of input lists.".
 [*----------------------------------------------------------------------------*)
 
-let rec zip = ()
+let rec zip xs ys = 
+  match (xs, ys) with
+  | ([], []) -> []
+  | (x :: xs, y :: ys) -> (x, y) :: (zip xs ys) 
+  | (_::_, [])
+  | ([], _::_) -> failwith "you failed"
 
 (*----------------------------------------------------------------------------*]
  Funkcija [zip_enum_tlrec] sprejme seznama [x_0; x_1; ...] in [y_0; y_1; ...]
@@ -83,7 +139,14 @@ let rec zip = ()
  - : (int * string * int) list = [(0, "a", 7); (1, "b", 3); (2, "c", 4)]
 [*----------------------------------------------------------------------------*)
 
-let rec zip_enum_tlrec = ()
+let zip_enum_tlrec xs ys = 
+  let rec zip_aux acc1 acc2 xs ys = match (xs, ys) with
+  | ([], []) -> 
+  | (x :: xs, y :: ys) -> zip_aux (x :: ac1) (y :: ac2) xs ys
+  | (_::_, [])
+  | ([], _::_) -> failwith "you failed"
+  in
+  zip_aux [] 0 xs ys 
 
 (*----------------------------------------------------------------------------*]
  Funkcija [unzip] je inverz funkcije [zip], torej sprejme seznam parov

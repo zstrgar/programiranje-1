@@ -59,15 +59,17 @@ let rec double xs =
  - : int list * int list = ([1; 2; 3; 4; 5], [])
 [*----------------------------------------------------------------------------*)
 
-let rec divide k xs = 
-  match xs with
-  | [] -> []
+(*let rec divide k xs = 
+  match (k, xs) with
+  | (_, []) -> ([], [])
+  | (k, xs) when k <=0 -> 0
+  ....
   | x :: xs_tail -> 
     if k = 0 then
       [], xs
     else 
       (l, r) = divide (k - 1) xs_tail
-      (x :: l, r)
+      (x :: l, r)*)
 
       
   
