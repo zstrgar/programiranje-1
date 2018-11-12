@@ -59,7 +59,7 @@ let rec double xs =
  - : int list * int list = ([1; 2; 3; 4; 5], [])
 [*----------------------------------------------------------------------------*)
 
-(*let rec divide k xs = 
+let rec divide k xs = 
   match xs with
   | [] -> []
   | x :: xs_tail -> 
@@ -67,7 +67,7 @@ let rec double xs =
       [], xs
     else 
       (l, r) = divide (k - 1) xs_tail
-      (x :: l, r)*)
+      (x :: l, r)
 
       
   
