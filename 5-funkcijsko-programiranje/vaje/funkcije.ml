@@ -128,7 +128,7 @@ let rec zip xs ys =
   | ([], []) -> []
   | (x :: xs, y :: ys) -> (x, y) :: (zip xs ys) 
   | (_::_, [])
-  | ([], _::_) -> failwith "you failed"
+  | ([], _::_) -> failwith "Seznama sta različne dolžine!"
 
 (*----------------------------------------------------------------------------*]
  Funkcija [zip_enum_tlrec] sprejme seznama [x_0; x_1; ...] in [y_0; y_1; ...]
@@ -140,13 +140,13 @@ let rec zip xs ys =
 [*----------------------------------------------------------------------------*)
 
 let zip_enum_tlrec xs ys = 
-  let rec zip_aux acc1 acc2 xs ys = match (xs, ys) with
-  | ([], []) -> 
-  | (x :: xs, y :: ys) -> zip_aux (x :: ac1) (y :: ac2) xs ys
+  let rec zip_aux  st acc xs ys = match (xs, ys) with
+  | ([], []) -> reverse acc
+  | (x :: xs, y :: ys) -> zip_aux (st + 1) ((st, x, y) :: acc) xs ys
   | (_::_, [])
-  | ([], _::_) -> failwith "you failed"
+  | ([], _::_) -> failwith "Seznama sta različne dolžine!"
   in
-  zip_aux [] 0 xs ys 
+  zip_aux 0 [] xs ys 
 
 (*----------------------------------------------------------------------------*]
  Funkcija [unzip] je inverz funkcije [zip], torej sprejme seznam parov
