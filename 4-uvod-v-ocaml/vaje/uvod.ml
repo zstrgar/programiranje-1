@@ -59,22 +59,15 @@ let rec double xs =
  - : int list * int list = ([1; 2; 3; 4; 5], [])
 [*----------------------------------------------------------------------------*)
 
-(*let rec divide k xs = 
+let rec divide k xs = 
   match (k, xs) with
   | (_, []) -> ([], [])
-  | (k, xs) when k <=0 -> 0
-  ....
-  | x :: xs_tail -> 
-    if k = 0 then
-      [], xs
-    else 
-      (l, r) = divide (k - 1) xs_tail
-      (x :: l, r)*)
+  | (k, xs) when k <=0 -> ([], xs)
+  | (k, x :: xs) ->
+      let (list1, list2) = divide (k - 1) xs in
+          (x :: list1, list2)
 
       
-  
-
-
 
 (*----------------------------------------------------------------------------*]
  Funkcija [delete k list] iz seznama izbriše [k]-ti element. V primeru
@@ -84,7 +77,15 @@ let rec double xs =
  - : int list = [0; 0; 0; 0; 0]
 [*----------------------------------------------------------------------------*)
 
-let rec delete = ()
+let rec delete k list = 
+  match list with
+  | [] -> failwith "List too short"
+  | x :: xs -> 
+      if k <= 0 then
+        xs
+      else
+        x :: delete (k - 1) xs
+      
 
 (*----------------------------------------------------------------------------*]
  Funkcija [slice i k list] sestavi nov seznam, ki vsebuje elemente seznama
@@ -95,7 +96,11 @@ let rec delete = ()
  - : int list = [1; 2; 3]
 [*----------------------------------------------------------------------------*)
 
-let rec slice = ()
+let rec slice i k list = 
+  let (_, slice1) = divide i list in
+  let (slice2, _) = divide (k - i) slice1 in
+  slice2
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [insert x k list] na [k]-to mesto seznama [list] vrine element [x].
@@ -107,7 +112,16 @@ let rec slice = ()
  - : int list = [1; 0; 0; 0; 0; 0]
 [*----------------------------------------------------------------------------*)
 
-let rec insert = ()
+let rec insert x k list =
+  match list with
+  | [] -> [x]
+  | glava :: rep ->
+      if k <= 0 then
+        x :: glava :: rep
+      else
+        glava :: insert x (k - 1) rep
+
+      
 
 (*----------------------------------------------------------------------------*]
  Funkcija [rotate n list] seznam zavrti za [n] mest v levo. Predpostavimo, da

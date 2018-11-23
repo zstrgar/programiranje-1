@@ -159,7 +159,7 @@ let zip_enum_tlrec xs ys =
 let rec unzip list =
   match list with
   | [] -> ([], [])
-  | x :: xs -> ((fst x :: unzip xs), (snd x :: unzip xs))
+  | (x,y) :: xs -> unzip xs 
 
 (*----------------------------------------------------------------------------*]
  Funkcija [unzip_tlrec] je repno rekurzivna različica funkcije [unzip].
