@@ -21,6 +21,15 @@
  - : euro = Euro 0.4305
 [*----------------------------------------------------------------------------*)
 
+type euro = Euro of float
+
+type dollar = Dollar of float
+
+let euro_to_dollar (Euro x) = Dollar (1.132 *. x)  
+
+let dollar_to_euro (Dollar x) = Euro (0.884 *. x)
+
+
 
 
 (*----------------------------------------------------------------------------*]
@@ -35,6 +44,15 @@
  - : currency = Pound 0.007
 [*----------------------------------------------------------------------------*)
 
+type currency =
+       | Jen of float
+       | Pound of float
+       | Krona of float
+
+let to_pound = function
+       | Pound x -> Pound x
+       | Jen x -> Pound 0.007
+       | Krona x -> Pound 0.085
 
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
@@ -57,7 +75,12 @@
  Nato napišite testni primer, ki bi predstavljal "[5; true; false; 7]".
 [*----------------------------------------------------------------------------*)
 
+type intbool_list =
+       | Int of int * intbool_list
+       | Bool of bool * intbool_list
+       | Nil
 
+let test = Int(5, Bool(true, Bool(false, Int(7, Nil))))
 
 (*----------------------------------------------------------------------------*]
  Funkcija [intbool_map f_int f_bool ib_list] preslika vrednosti [ib_list] v nov
@@ -65,7 +88,11 @@
  oz. [f_bool].
 [*----------------------------------------------------------------------------*)
 
-let rec intbool_map = ()
+let rec intbool_map f_int f_bool ib_list = 
+ match ib_list with
+ | Int (x, xs) -> Int(f_int x, intbool_map f_int f_bool xs) 
+ | Bool (x, xs) -> Bool(f_bool x, intbool_map f_int f_bool xs)
+ | Nil -> Nil
 
 (*----------------------------------------------------------------------------*]
  Funkcija [intbool_reverse] obrne vrstni red elementov [intbool_list] seznama.
