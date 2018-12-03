@@ -201,7 +201,7 @@ let rec member2 x = function
  - : int option = None
 [*----------------------------------------------------------------------------*)
 
-let rec succ bst = 
+let succ bst = 
      let rec min = function
           | Prazno -> None
           | Sestavljeno(Prazno, x, _) -> Some x  (* za desno nam je vseeeno, ker tm bo itak večja številka*)
@@ -213,9 +213,15 @@ let rec succ bst =
 
 
 
-let rec pred = function
+let pred bst = 
+     let rec max = function
+          | Prazno -> None
+          | Sestavljeno (_, x, Prazno) -> Some x  
+          | Sestavljeno (_, _, desno) -> max desno
+     in
+     match bst with
      | Prazno -> None
-     | Sestavljeno(levo, x, desno) -> Some (max levo)
+     | Sestavljeno(levo, _, _) -> max levo
           
 
 
@@ -232,6 +238,12 @@ let rec pred = function
  Node (Node (Node (Empty, 0, Empty), 2, Empty), 5,
  Node (Node (Empty, 6, Empty), 11, Empty))
 [*----------------------------------------------------------------------------*)
+
+(* let rec delete x bst =
+     match bst with
+     | Prazno -> Prazno
+     | Sestavljeno(Prazno, y, Prazno) when x = y -> Prazno
+     | Sestavljeno (levo, y, desno) -> succ bst  *)
 
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
