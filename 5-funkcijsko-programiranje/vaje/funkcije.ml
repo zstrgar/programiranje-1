@@ -68,8 +68,7 @@ let range n =
  - : int list = [2; 3; 4; 5; 6]
 [*----------------------------------------------------------------------------*)
 
-let rec map f list = 
-  match list with
+let rec map f = function
   | [] -> []
   | x :: xs -> f x :: map f xs
 
@@ -91,7 +90,8 @@ let rec map f list =
   reverse(map_aux [] f xs) *)
 
   
-(* f nerabi bit v tej dodatni funkciji ker se med rekurzijo ne spreminja; namesto match with lahko napišeš function*)
+(* f nerabi bit v tej dodatni funkciji ker se med rekurzijo ne spreminja; 
+namesto match with lahko napišeš function ampak samo takrt ko imaš samo en agument!*)
 
 
 let map_tlrec f xs =                   
