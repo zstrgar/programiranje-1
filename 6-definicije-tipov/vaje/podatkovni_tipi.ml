@@ -99,7 +99,14 @@ let rec intbool_map f_int f_bool ib_list =
  Funkcija je repno rekurzivna.
 [*----------------------------------------------------------------------------*)
 
-let rec intbool_reverse = ()
+let rec intbool_reverse ib_list = 
+       let rec reverse_aux acc = function
+       | Int(x, xs) -> reverse_aux (Int(x, acc)) xs
+       | Bool (x, xs) -> reverse_aux (Bool(x, acc)) xs
+       | Nil -> acc
+       in
+       reverse_aux Nil ib_list
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [intbool_separate ib_list] loči vrednosti [ib_list] v par [list]
@@ -107,7 +114,13 @@ let rec intbool_reverse = ()
  vrednosti. Funkcija je repno rekurzivna in ohranja vrstni red elementov.
 [*----------------------------------------------------------------------------*)
 
-let rec intbool_separate = ()
+let rec intbool_separate ib_list = 
+       let rec separate_aux acc1 acc2 = function
+       | Int(x, xs) -> separate_aux (acc1 @ [x]) acc2 xs
+       | Bool(x, xs) -> separate_aux acc1 (acc2 @ [x]) xs
+       | Nil -> acc1 acc2
+       in
+       separate_aux Nil Nil ib_list
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Določeni ste bili za vzdrževalca baze podatkov za svetovno priznano čarodejsko
