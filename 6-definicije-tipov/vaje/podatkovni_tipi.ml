@@ -101,9 +101,9 @@ let rec intbool_map f_int f_bool ib_list =
 
 let rec intbool_reverse ib_list = 
        let rec reverse_aux acc = function
-       | Int(x, xs) -> reverse_aux (Int(x, acc)) xs
-       | Bool (x, xs) -> reverse_aux (Bool(x, acc)) xs
-       | Nil -> acc
+        | Int(x, xs) -> reverse_aux (Int(x, acc)) xs
+        | Bool (x, xs) -> reverse_aux (Bool(x, acc)) xs
+        | Nil -> acc
        in
        reverse_aux Nil ib_list
 
@@ -115,12 +115,13 @@ let rec intbool_reverse ib_list =
 [*----------------------------------------------------------------------------*)
 
 let rec intbool_separate ib_list = 
-       let rec separate_aux acc1 acc2 = function
-       | Int(x, xs) -> separate_aux (acc1 @ [x]) acc2 xs
-       | Bool(x, xs) -> separate_aux acc1 (acc2 @ [x]) xs
-       | Nil -> acc1 acc2
+       let rec separate_aux acci accb ib_list = 
+        match ib_list with
+        | Int(x, xs) -> separate_aux (x :: acci) accb xs
+        | Bool(x, xs) -> separate_aux acci (x :: accb) xs
+        | Nil -> (acci, accb)
        in
-       separate_aux Nil Nil ib_list
+       separate_aux [] [] (intbool_reverse ib_list)
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Določeni ste bili za vzdrževalca baze podatkov za svetovno priznano čarodejsko
@@ -138,6 +139,9 @@ let rec intbool_separate ib_list =
  [specialisation], ki loči med temi zaposlitvami.
 [*----------------------------------------------------------------------------*)
 
+type magic = Fire | Frost | Arcane
+
+type specialisation = Historian | Teacher | Researcher
 
 
 (*----------------------------------------------------------------------------*]
@@ -155,6 +159,14 @@ let rec intbool_separate ib_list =
  - : wizard = {name = "Matija"; status = Employed (Fire, Teacher)}
 [*----------------------------------------------------------------------------*)
 
+type status = 
+       | Newbie
+       | Student of magic * int
+       | Employed of magic * specialisation
+
+type wizard = {ime: string; status: status}
+
+let professor = {ime = "Matija"; status = Employed(Fire, Teacher)}
 
 
 (*----------------------------------------------------------------------------*]
@@ -168,6 +180,15 @@ let rec intbool_separate ib_list =
  - : magic_counter = {fire = 1; frost = 1; arcane = 2}
 [*----------------------------------------------------------------------------*)
 
+type magic_encounter = {fire: int; frost: int; arcane: int}
+
+let update counter magic =
+       match magic with
+       | Fire -> {counter with fire = counter.fire + 1}
+       | Frost -> {counter with frost = counter.frost + 1}
+       | Arcane -> {counter with arcane = counter.arcane + 1}
+
+
 
 
 (*----------------------------------------------------------------------------*]
@@ -178,7 +199,17 @@ let rec intbool_separate ib_list =
  - : magic_counter = {fire = 3; frost = 0; arcane = 0}
 [*----------------------------------------------------------------------------*)
 
-let rec count_magic = ()
+let rec count_magic wizard_list = 
+       let rec count counter = function
+        | [] -> counter
+        | {ime; status} :: wizards -> (
+              match status with
+              | Newbie -> count counter wizards
+              | Student (magic, _) -> count (update counter magic) wizards
+              | Employed(magic, _) -> count (update counter magic) wizards)
+       in count {fire = 0; frost = 0; arcane = 0} wizard_list
+
+
 
 (*----------------------------------------------------------------------------*]
  Želimo poiskati primernega kandidata za delovni razpis. Študent lahko postane
@@ -194,4 +225,18 @@ let rec count_magic = ()
  - : string option = Some "Jaina"
 [*----------------------------------------------------------------------------*)
 
-let rec find_candidate = ()
+let find_candidate magic specialisation wizard_list =
+       let year =
+         match specialisation with
+         | Historian -> 3
+         | Researcher -> 4
+         | Teacher -> 5
+       in
+       let rec search = function
+         | [] -> None
+         | {ime; status} :: wizards ->
+             match status with
+             | Student (m, y) when m = magic && y >= year -> Some ime
+             | _ -> search wizards
+       in
+       search wizard_list
