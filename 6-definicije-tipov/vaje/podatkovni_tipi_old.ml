@@ -12,13 +12,15 @@ type race = Orc | Hobbit | Human
 *)
 
 
-type school = ()
+type school = Fire | Necrotic | Angelic
 
 
-type spell = ()
+type spell = Firewall | Blaze | Resurrect | Cripple | Renounce | Banish
 
 (* Veščine [skills], ki jih je čarodej osvojil, so seznam vseh urokov,
    ki jih lahko hitro izvede. Definiraj tip `skills'. *)
+
+type skills = spell list
 
 
 
@@ -29,12 +31,15 @@ type spell = ()
 type mana = int
 type health = int
 
-type wizard = {name : string; }
+type wizard = {name : string; hp: health; ability: mana; race: race; skills: spell list }
 
 
 (* Napiši funkcijo ki vsakemu uroku priredi primerno šolo magije. *)
-let school_of_spell = function
-  () -> ()
+let school_of_spell spell =
+  match spell with
+  | Firewall | Blaze -> Fire
+  | Resurrect | Cripple -> Necrotic 
+  | Renounce | Banish -> Angelic
 
 (* Glede na tabelo napiši funkcijo, ki uroku priredi količino mane,
    ki jo čarodej potrebuje za izvršitev uroka:
@@ -47,7 +52,14 @@ let school_of_spell = function
 
    Namig: Lahko si pomagaš z regex-replace v Notepad++
  *)
-let mana_of_spell = failwith "todo"
+let mana_of_spell spell = 
+  match spell with
+  | Blaze -> 420
+  | Firewall -> 35
+  | Renounce -> 17
+  | Banish -> 103
+  | Resurrect -> 178
+  | Cripple -> 250
 
 (* Ustvari nekaj primerov čarodejov, tako kot je prikazano na primeru Merlina.
    Ponovno si lahko pomagaš s regex-replace.*)
@@ -59,17 +71,26 @@ name : "Kylo Ren",   ability : 589,  hp : 90,    skills : [Resurrect],          
 name : "Snoop Dogg", ability : 420,  hp : 4000,  skills : [Blaze],                         race : Orc
 *)
 
-(* let merlin = {name = "Merlin";   ability = 1832; hp = 9001; skills = [Renounce; Banish];  race = Human} *)
-let frodo =  failwith "todo"
-let ajitam = failwith "todo"
-let mrDuck = failwith "todo"
-let kYloReN = failwith "todo"
-let snoop_dogg = failwith "todo"
+let merlin = {name = "Merlin";   ability = 1832; hp = 9001; skills = [Renounce; Banish];  race = Human}
+let frodo =  {name = "Frodo"; ability = 53; hp = 1000; skills = [Renounce]; race = Hobbit}
+let ajitam = {name = "Ajitam"; ability = 1337; hp = 7331; skills = [Firewall; Resurrect; Firewall]; race = Hobbit}
+let mrDuck = {name = "Mr Duck"; ability = 7; hp = 90000; skills = [Cripple]; race = Orc}
+let kYloReN = {name = "Kylo Ren"; ability = 589; hp = 90; skills = [Resurrect]; race = Human}
+let snoop_dogg = {name = "Snoop Dogg"; ability = 420; hp = 4000; skills = [Blaze]; race = Orc}
 
 
 (* Napiši funkcijo, ki iz seznama čarodejev vrne čarodeja z največ mane. *)
-let rec strongest_wizard (wizards : wizard list) : wizard option =
-  failwith "todo"
+let rec strongest_wizard wizards =
+  match wizards with 
+  | [] -> None
+  | [w] -> Some w.name
+  | w1 :: w2 :: wizards -> 
+    if w1.ability > w2.ability then
+      strongest_wizard(w1 :: wizards)
+    else
+      strongest_wizard(w2 :: wizards)
+    
+
 
 (* Posploši funkcijo strongest_wizard na funkcijo max_list, ki sprejme seznam
    in dodatno funkcijo dveh elementov max : 'a -> 'a -> 'a in vrne maksimalni element seznama
@@ -78,10 +99,12 @@ let rec strongest_wizard (wizards : wizard list) : wizard option =
 
 
 
+
 (* Rase imajo različno občutljivost [vulnerability] na določene šole magije.
    Napiši tip s katerim lahko izraziš kdaj ima rasa visoko [High], navadno [Normal]
    ali pa nizko [Low] občutljivost na urok. *)
 
+type vulnerability = High | Normal | Low
 
 (* Napiši funkcijo, ki glede na šolo uroka in raso izračuna občutljivost.
 
@@ -90,17 +113,31 @@ let rec strongest_wizard (wizards : wizard list) : wizard option =
    Sicer vrne Normal
 *)
 
-(* let effectiveness (school : school) (race : race) : vulnerability =
-...
-*)
+
+let effectiveness school race =
+  match (school, race) with
+  | (Necrotic, Orc)
+  | (Fire, Hobbit)
+  | (Angelic, Human) -> Low
+  | (Necrotic, Hobbit)
+  | (Fire, Human)
+  | (Angelic, Orc) -> High
+  | _ -> Normal
 
 (* Zapiši funkcijo, ki za čarodeja izračuna njegovo občutljivost na podani urok. *)
-let vulnerable = failwith "todo"
+let vulnerable wizard spell=
+  effectiveness (school_of_spell spell) wizard.race
 
 
 (* Občutljivost se v boju izrazi kot koeficient škode, ki jo utrpi čarodej, če ga urok zadane.
    Zapiši funkcijo, ki glede na občutljivost vrne primeren koeficient, tako da čarodej z nizko
    občutljivostjo utrpi le pol škode, čarodej z visoko občutljivostjo pa dvakratnik.*)
+
+let koef wizard spell =
+  match (vulnerable wizard spell) with
+  | Low -> 0.5
+  | Normal -> 1.0
+  | High -> 2.0
 
 
 (* Vsak urok naredi toliko škode, kot je potrebnih točk mane za izvršitev uroka.
@@ -111,12 +148,18 @@ let vulnerable = failwith "todo"
    int_of_float.
 *)
 
+let damage wizard spell =
+  int_of_float(float_of_int(mana_of_spell spell) *. koef wizard spell)
 
 (* Zapiši funkcijo, ki vrne novo stanje čarodeja (z znižanimi življenskimi točkami [hp]),
    po tem, ko ga je zadel izbrani urok.
    (Novo stanje čarodeja je prav tako tipa wizard)
 *)
 
+let condition wizard spell =
+  let new_condition = wizard.hp - damage wizard spell
+  in
+  {wizard with hp = new_condition}
 
 (* Napiši funkcijo, ki za danega čarovnika izvršuje uroke, dokler ne izvede vseh urokov
    na seznamu, ali pa mu zmanjka točk mane. *)
