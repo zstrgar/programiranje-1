@@ -170,7 +170,14 @@ let rec unzip list =
  - : int list * string list = ([0; 1; 2], ["a"; "b"; "c"])
 [*----------------------------------------------------------------------------*)
 
-let rec unzip_tlrec = ()
+let unzip_tlrec list =
+  let rec unzip_aux acc1 acc2 list =
+    match list with
+    | [] -> (acc1, acc2)
+    | (x, y) :: xs -> unzip_aux (acc1 @ [x]) (acc2 @ [y]) xs
+  in
+  unzip_aux [] [] list
+  
 
 (*----------------------------------------------------------------------------*]
  Funkcija [fold_left_no_acc f list] sprejme seznam [x0; x1; ...; xn] in
