@@ -53,9 +53,12 @@ module type NAT = sig
 
   val eq   : t -> t -> bool
   val zero : t
-  (* Dodajte manjkajoče! *)
-  (* val to_int : t -> int *)
-  (* val of_int : int -> t *)
+  val one : t
+  val sestej : t -> t -> t
+  val odstej : t -> t -> t
+  val zmnozi : t -> t -> t
+  val to_int : t -> int 
+  val of_int : int -> t
 end
 
 (*----------------------------------------------------------------------------*]

@@ -239,11 +239,19 @@ let pred bst =
  Node (Node (Empty, 6, Empty), 11, Empty))
 [*----------------------------------------------------------------------------*)
 
-(* let rec delete x bst =
-     match bst with
+let rec delete x = function
      | Prazno -> Prazno
-     | Sestavljeno(Prazno, y, Prazno) when x = y -> Prazno
-     | Sestavljeno (levo, y, desno) -> succ bst  *)
+     | (Sestavljeno(levo, y, desno) as t) ->
+          if x < y then
+               Sestavljeno(delete x levo, y, desno)
+          else if x > y then
+               Sestavljeno(levo, y, delete x desno)
+          else
+               match succ t with
+               | None -> levo
+               | Some s -> let r_without_s = delete s desno in
+                         Sestavljeno(levo, s, r_without_s)
+          
 
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
@@ -257,6 +265,7 @@ let pred bst =
  vrednosti, ga parametriziramo kot [('key, 'value) dict].
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 
+type ('key, 'value) dict = ('key * 'value) drevo
 
 (*----------------------------------------------------------------------------*]
  Napišite testni primer [test_dict]:
@@ -267,6 +276,9 @@ let pred bst =
      "c":-2
 [*----------------------------------------------------------------------------*)
 
+let test_dict 
+     : (string, int) dict
+     = Sestavljeno(leaf("a", 0), ("b", 1), Sestavljeno(leaf("c", -2), ("d", 2), Prazno))
 
 (*----------------------------------------------------------------------------*]
  Funkcija [dict_get key dict] v slovarju poišče vrednost z ključem [key]. Ker
@@ -278,6 +290,13 @@ let pred bst =
  - : int option = Some (-2)
 [*----------------------------------------------------------------------------*)
 
+let rec get_dict k = function
+     | Prazno -> None
+     | Sestavljeno(levo, (k', v), desno) -> if k = k' then Some v
+          else if k < k' then
+               get_dict k levo
+          else
+               get_dict k desno
       
 (*----------------------------------------------------------------------------*]
  Funkcija [print_dict] sprejme slovar s ključi tipa [string] in vrednostmi tipa
@@ -294,6 +313,14 @@ let pred bst =
  d : 2
  - : unit = ()
 [*----------------------------------------------------------------------------*)
+
+let rec print_dict = function
+     | Prazno -> ()
+     | Sestavljeno (levo, (k, v), desno) ->
+          print_dict(levo);
+          print_string(k ^ " : " ^ string_of_int(v)); print_newline();
+          print_dict(desno)
+     
 
 
 (*----------------------------------------------------------------------------*]
