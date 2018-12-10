@@ -73,9 +73,18 @@ end
 module Nat_int : NAT = struct
 
   type t = int
-  let eq x y = failwith "later"
+  let eq x y = 
+    if x = y then true
+    else false
   let zero = 0
-  (* Dodajte manjkajoče! *)
+  let one = 1
+  let sestej = ( + )
+  let odstej x y = x - y
+  let zmnozi x y = ( * ) x y
+  let to_int n = n
+  let of_int k =
+    if k >= 0 then k
+    else -k  (*lahko bi dal pa recimo 0, ampak bi blo fino povedat će v uni signaturi*)
 
 end
 
@@ -93,9 +102,29 @@ end
 
 module Nat_peano : NAT = struct
 
-  type t = unit (* To morate spremeniti! *)
-  let eq x y = failwith "later"
-  let zero = () (* To morate spremeniti! *)
+  type t = Zero | S of t  
+  let rec eq x y = 
+    match (x, y) with
+    | Zero, Zero -> true
+    | _, Zero -> false
+    | Zero, _ -> false
+    | S i, S j -> eq i j
+  let zero = Zero
+  let one = S Zero
+  let rec sestej x y =
+    match (x, y) with
+    | Zero, Zero -> Zero
+    | x, Zero -> x
+    | Zero, y -> y
+    | S i, S j -> S (S (sestej i j))
+  let rec odstej x y =
+    match (x, y) with
+    | Zero, Zero -> Zero
+    | x, Zero -> x
+    | Zero, y -> Zero
+    | S i, S j -> odstej i j
+
+
   (* Dodajte manjkajoče! *)
 
 end
