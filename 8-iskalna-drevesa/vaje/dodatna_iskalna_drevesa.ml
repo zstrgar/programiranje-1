@@ -2,6 +2,11 @@
  DODATNE VAJE 
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 
+type 'a drevo = 
+  |Prazno 
+  | Sestavljeno of 'a drevo * 'a * 'a drevo
+
+let leaf x = Sestavljeno(Prazno, x, Prazno)
 (*----------------------------------------------------------------------------*]
  Funkcija [bst_of_list] iz seznama naredi dvojiško iskalno drevo.
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -9,6 +14,29 @@
  - : bool = true
 [*----------------------------------------------------------------------------*)
 
+let uredi list = List.sort compare list
+
+(*let rec bst_of_list list =
+  let urejen = uredi list in
+  match urejen with
+  | [] -> Prazno
+  | x :: xs -> Sestavljeno(leaf x, _, desno) *)
+
+let rec filter f list =
+  match list with
+  | [] -> []
+  | x :: xs -> 
+    if f x then
+      x :: (filter f xs)
+    else
+      filter f xs
+
+let rec bst_of_list list = 
+  match list with
+  | [] -> Prazno
+  | x :: [] -> leaf x
+  | x :: xs ->  Sestavljeno(bst_of_list(filter ((>)x) xs), x, bst_of_list (filter ((<)x) xs))
+    
 
 (*----------------------------------------------------------------------------*]
  Funkcija [tree_sort] uredi seznam s pomočjo pretvorbe v bst in nato nazaj
