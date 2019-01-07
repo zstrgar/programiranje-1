@@ -26,8 +26,20 @@
 #     >>> a
 #     [10, 2, 0, 4, 11, 15, 17, 5, 18]
 ##############################################################################
+def zamenjaj(a, i, j):
+    ''' Funkcija zamenja elementa z indeksom i in indeksom j v seznamu a.'''
+    a[i], a[j] = a[j], a[i]
+    return a
 
-
+def pivot(a, start, end):
+    pivot = a[start]
+    indeks = start + 1
+    for i in range(start + 1, end + 1):
+        if a[i] < pivot:
+            a = zamenjaj(a, indeks, i)
+            indeks = indeks + 1
+    a = zamenjaj(a, start, indeks - 1)
+    return indeks - 1
 
 ##############################################################################
 # Tabelo a želimo urediti z algoritmom hitrega urejanja (quicksort).
@@ -43,7 +55,20 @@
 #   [2, 3, 4, 5, 10, 11, 15, 17, 18]
 ##############################################################################
 
+#def quicksort_part(a, start, end):
+#    pivot1 = a[start]
+#    indeks_p = pivot(a, start, end)
+#    if len(a) == 0:
+#        return []
+#    else:
+#        manjsi = quicksort_part(a, start, indeks_p - 1)
+#        vecji = quicksort_part(a, indeks_p + 1, end)
+#        return manjsi + pivot1 + vecji
+    
 
+#def quicksort(a):
+#    return quicksort_part(a, 0, len(a) - 1)
+        
 
 ##############################################################################
 # V tabeli želimo poiskati vrednost k-tega elementa po velikosti.
