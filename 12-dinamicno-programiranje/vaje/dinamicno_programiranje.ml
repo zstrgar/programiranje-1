@@ -1,5 +1,17 @@
 (* ========== Vaje 6: Dinamično programiranje  ========== *)
 
+let memoiziraj_rec odviti_f =
+  let rezultati = Hashtbl.create 512 in
+  let rec mem_f x =
+    match Hashtbl.find_opt rezultati x with
+    | None ->
+        let y = odviti_f mem_f x in
+        Hashtbl.add rezultati x y;
+        y
+    | Some y ->
+        y
+  in
+  mem_f
 
 (*----------------------------------------------------------------------------*]
  Požrešna miška se nahaja v zgornjem levem kotu šahovnice. Premikati se sme
@@ -21,6 +33,40 @@ let test_matrix =
      [| 2 ; 4 ; 5 |];
      [| 7 ; 0 ; 1 |] |]
 
+
+let max_cheese cheese_matrix = 
+  let max_r = Array.length cheese_matrix in   (*koliko je vrstic*)
+  let max_c = Array.length cheese_matrix.(0) in   (* koliko je stolpcev, pogledal smo samo eno vrstico, to bi failal, če bi imel prazen seznam, to bomo zdej ignoriral*)
+  let rec max_cheese' r c =
+    if r >= max_r || c >= max_c then
+      0     (* treba je prevert, če je res kul da je 0 (tokrat je ker gledamo maximalno vsoto in 0 bi zmeri manjša, oz zadošča tudi za matriko 1x1*)
+    else
+      let right = max_cheese' r (c + 1) in
+      let down = max_cheese' (r + 1) c in
+      let our_cheese = cheese_matrix.(r).(c) in
+      our_cheese + max right down
+    in
+   max_cheese' 0 0
+
+(* ta zadevica bo počas delala za zelo veliko matriko, ker vse računa. nič si ne zapovne *)
+
+(*Če memoiziramo bo boljše :) *)
+
+let max_cheese cheese_matrix =
+  let max_r = Array.length cheese_matrix in   (*koliko je vrstic*)
+  let max_c = Array.length cheese_matrix.(0) in   (* koliko je stolpcev, pogledal smo samo eno vrstico, to bi failal, če bi imel prazen seznam, to bomo zdej ignoriral*)
+  let max_cheese' recursive_max_cheese' (r, c) =
+    if r >= max_r || c >= max_c then
+      0     (* treba je prevert, če je res kul da je 0 (tokrat je ker gledamo maximalno vsoto in 0 bi zmeri manjša, oz zadošča tudi za matriko 1x1*)
+    else
+      let right = recursive_max_cheese' (r, c + 1) in
+      let down = recursive_max_cheese' (r + 1, c) in
+      let our_cheese = cheese_matrix.(r).(c) in
+      our_cheese + max right down
+    in
+   let memo_max_cheese = memoiziraj_rec max_cheese' in
+   memo_max_cheese(0, 0)
+
 (*----------------------------------------------------------------------------*]
  Rešujemo problem sestavljanja alternirajoče obarvanih stolpov. Imamo štiri
  različne tipe gradnikov, dva modra in dva rdeča. Modri gradniki so višin 2 in
@@ -36,6 +82,16 @@ let test_matrix =
  # alternating_towers 10;;
  - : int = 35
 [*----------------------------------------------------------------------------*)
+
+(*
+let rec rdeci = function
+  | 0 -> 1
+  | n when n < 0 -> 0
+  | n -> modri(n - 1) + (n - 2)
+
+
+let alternating_towers n = 
+*)
 
 
 (*----------------------------------------------------------------------------*]
