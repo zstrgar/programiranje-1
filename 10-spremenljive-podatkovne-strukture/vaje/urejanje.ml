@@ -9,6 +9,12 @@
  val l : int list = [0; 1; 0; 4; 0; 9; 1; 2; 5; 4]
 [*----------------------------------------------------------------------------*)
 
+let rec randlist len max =
+  if len < 0 then []
+  else
+    Random.int max :: randlist (len - 1) max
+
+let l = randlist 10 10 ;;
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Sedaj lahko s pomočjo [randlist] primerjamo našo urejevalno funkcijo (imenovana
@@ -35,11 +41,27 @@
  - : int list = [7]
 [*----------------------------------------------------------------------------*)
 
+let rec insert y xs =
+  match xs with
+  | [] -> [y]
+  | x :: xs ->
+    if x > y then y :: x :: xs
+    else
+      x :: (insert y xs)
+
 
 (*----------------------------------------------------------------------------*]
  Prazen seznam je že urejen. Funkcija [insert_sort] uredi seznam tako da
  zaporedoma vstavlja vse elemente seznama v prazen seznam.
 [*----------------------------------------------------------------------------*)
+
+let insert_sort list =
+  let rec aux acc list =
+    match list with
+    | [] -> acc
+    | x :: xs -> aux (insert x acc) xs
+  in
+  aux [] list
 
 
 
@@ -52,6 +74,29 @@
  najmanjši element v [list] in seznam [list'] enak [list] z odstranjeno prvo
  pojavitvijo elementa [z]. V primeru praznega seznama vrne [None]. 
 [*----------------------------------------------------------------------------*)
+
+let min list = 
+  let rec aux trenutni_min list =
+    match list with
+    | [] -> trenutni_min
+    | x :: xs -> aux (min x trenutni_min) xs
+  in
+  aux 0 list
+
+let rec odstrani e list = 
+  match list with
+  | [] -> failwith "Dal si mi prazen seznam"
+  | x :: xs ->
+    if x = e then xs
+    else
+      x :: odstrani e xs
+
+let rec min_and_rest list =
+  let z = min list in
+  let list' = odstrani z list in
+  match list with
+  | [] -> None
+  | _ -> Some (z, list')
 
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
@@ -72,6 +117,14 @@
  Namig: Uporabi [min_and_rest] iz prejšnje naloge.
 [*----------------------------------------------------------------------------*)
 
+let selection_sort list = 
+  let rec aux urejen neurejen =
+    let s = min_and_rest neurejen in
+    match s with
+    | None -> List.rev urejen
+    | Some (x, xs) -> aux (x :: urejen) xs
+  in
+  aux [] list
 
 
 (*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*]
@@ -101,6 +154,10 @@
  - : int array = [|0; 4; 2; 3; 1|]
 [*----------------------------------------------------------------------------*)
 
+let swap a i j =
+  let v = a.(i) in
+  a.(i) <- a.(j);
+  a.(j) <- v
 
 (*----------------------------------------------------------------------------*]
  Funkcija [index_min a lower upper] poišče indeks najmanjšega elementa tabele
@@ -108,6 +165,14 @@
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  index_min [|0; 2; 9; 3; 6|] 2 4 = 4
 [*----------------------------------------------------------------------------*)
+
+let index_min a lower upper =
+  let stevec = ref lower in
+  for i = lower to upper do
+    if a.(i) < a.(!stevec) then 
+      stevec := i      
+  done;
+  !stevec
 
 
 (*----------------------------------------------------------------------------*]
@@ -117,3 +182,17 @@
  skupaj z [randlist].
 [*----------------------------------------------------------------------------*)
 
+let selection_sort_array a =
+  let index_end = Array.length a - 1 in
+  for boundary_sorted = 0 to index_end do
+    let i = index_min a boundary_sorted index_end in
+    swap a i boundary_sorted
+  done
+
+  
+  
+let selection_sort_list list =
+   (* For testing purposes. *)
+  let a = Array.of_list list in
+  selection_sort_array a;
+  Array.to_list a
