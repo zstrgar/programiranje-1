@@ -36,7 +36,7 @@ def pivot(a, start, end):
         return 0
     pivot = a[start]
     indeks = start + 1
-    for i in range(start + 1, end + 1):
+    for i in range(start + 1, end):
         if a[i] < pivot:
             a = zamenjaj(a, indeks, i)
             indeks = indeks + 1
@@ -58,17 +58,19 @@ def pivot(a, start, end):
 ##############################################################################
 
 def quicksort_part(a, start, end):
-    pivot1 = a[start]
-    if len(a[start:end]) == 1:
-        return a[start:end]
+    indeks_p = pivot(a, start, end) 
+    if len(a[start:indeks_p + 1]) == 1:
+        return a
+    if len(a[indeks_p + 1 : end]) == 1:
+        return a
     else:
-        indeks_p = pivot(a, start, end) 
         manjsi = quicksort_part(a, start, indeks_p)
         vecji = quicksort_part(a, indeks_p + 1, end)
-        return a[0:start] + manjsi + [pivot1] + vecji + a[end + 1:len(a)]
+        return a
+    
 
-#def quicksort(a):
-#    return quicksort_part(a, 0, len(a) - 1)
+def quicksort(a):
+    return quicksort_part(a, 0, len(a))
         
 
 ##############################################################################
@@ -85,3 +87,15 @@ def quicksort_part(a, start, end):
 # element po velikosti. Funkcija sme spremeniti tabelo [a]. Cilj naloge je, da
 # jo rešite brez da v celoti uredite tabelo [a].
 ##############################################################################
+
+def kth_element(a, k):
+    index = pivot(a,0,len(a))
+    if index == k:
+        return a[index]
+    elif index > k:
+        return kth_element(a[0 : index], k)
+    else:
+        return kth_element(a[index + 1 : len(a)], k - index-1)
+
+        
+
