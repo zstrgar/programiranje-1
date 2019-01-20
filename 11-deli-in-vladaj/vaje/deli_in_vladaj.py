@@ -32,6 +32,8 @@ def zamenjaj(a, i, j):
     return a
 
 def pivot(a, start, end):
+    if len(a[start:end]) == 1:
+        return 0
     pivot = a[start]
     indeks = start + 1
     for i in range(start + 1, end + 1):
@@ -55,16 +57,15 @@ def pivot(a, start, end):
 #   [2, 3, 4, 5, 10, 11, 15, 17, 18]
 ##############################################################################
 
-#def quicksort_part(a, start, end):
-#    pivot1 = a[start]
-#    indeks_p = pivot(a, start, end)
-#    if len(a) == 0:
-#        return []
-#    else:
-#        manjsi = quicksort_part(a, start, indeks_p - 1)
-#        vecji = quicksort_part(a, indeks_p + 1, end)
-#        return manjsi + pivot1 + vecji
-    
+def quicksort_part(a, start, end):
+    pivot1 = a[start]
+    if len(a[start:end]) == 1:
+        return a[start:end]
+    else:
+        indeks_p = pivot(a, start, end) 
+        manjsi = quicksort_part(a, start, indeks_p)
+        vecji = quicksort_part(a, indeks_p + 1, end)
+        return a[0:start] + manjsi + [pivot1] + vecji + a[end + 1:len(a)]
 
 #def quicksort(a):
 #    return quicksort_part(a, 0, len(a) - 1)
