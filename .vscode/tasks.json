@@ -22,6 +22,13 @@
             "command": "C:\\OCaml64\\usr\\local\\bin\\ocaml-env.exe exec -- C:\\OCaml64\\home\\ana\\.opam\\ocaml-variants.4.07.1+mingw64c\\bin\\ocaml.exe -init \\\"${file}\\\"",
            
             "problemMatcher": []
+        },
+        {
+            "label": "run file in OCaml faks",
+            "type": "shell",
+            "command": "ocaml -init \\\"${file}\\\"",
+           
+            "problemMatcher": []
         }
     ]
 }
