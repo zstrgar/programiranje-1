@@ -10,17 +10,17 @@
 
 class: center, middle
 
-# Programiranje 1
+# Deli in vladaj
 
-## Deli in vladaj
+## Programiranje 1
 
 ---
 
 ### Strategija **deli in vladaj** ima tri korake
 
-1. nalogo razdelimo na manjše podnaloge
-2. podnaloge rekurzivno rešimo
-3. dobljene rešitve združimo v rešitev prvotne naloge
+1. nalogo **razdelimo** na manjše podnaloge
+2. podnaloge **rekurzivno rešimo**
+3. dobljene rešitve **združimo** v rešitev prvotne naloge
 
 ---
 
@@ -65,7 +65,48 @@ class: center
 
 ## Urejanje z zlivanjem
 
-![](urejanje-z-zlivanjem.png)
+![](slike/urejanje-z-zlivanjem.png)
+
+---
+
+class: question
+
+### **Časovna zahtevnost** urejanja z zlivanjem
+
+![](slike/urejanje-z-zlivanjem.png)
+
+--
+
+### \\(T(n) = O(n) + 2 T(n / 2) + O(n) \\)
+
+
+---
+
+### Kako rešimo enačbo \\(T(n) = O(n) + 2 T(n / 2)\\)?
+
+--
+
+### \\(T(n) = O(n) + 2 T(n / 2)\\)
+
+--
+
+### \\(\\hphantom{T(n)} = O(n) + 2 O(n / 2) + 4 T(n / 4)\\)
+
+--
+
+### \\(\\hphantom{T(n)} = O(n) + 2 O(n / 2) + 4 O(n / 4) + 8 T(n / 8)\\)
+
+--
+
+### \\(\\hphantom{T(n)} = \cdots = k O(n) + 2^k T(n / 2^k) \\)
+
+--
+
+### \\(\\hphantom{T(n)} = \lceil \log_2 n \rceil O(n) + 2^{\lceil \log_2 n \rceil} O(1) \\)
+
+--
+
+### \\(\\hphantom{T(n)} = O(n \log n) \\)
 
 ---
 
@@ -73,7 +114,7 @@ class: center
 
 ## Hitro urejanje
 
-![](hitro-urejanje.png)
+![](slike/hitro-urejanje.png)
 
 ---
 
@@ -92,29 +133,16 @@ class: center
 
 ---
 
-class: center, middle, question
+### Urejanje **s primerjavo** je \\(\Omega(n \log n)\\)
 
-## Iskanje \\(k\\)-tega najmanjšega elementa v seznamu
-
----
-
-class: center
-
-### Urejanje **s primerjavo** je vedno \\(\Omega(n \log n)\\)
-
-![](odlocitveno-drevo.png)
+![](slike/odlocitveno-drevo.png)
 
 ---
 
 class: center, middle
 
-### [Algoritmi za urejanje **brez primerjave**](https://visualgo.net/en/sorting)
+## [Algoritmi za urejanje **brez primerjave**](https://visualgo.net/en/sorting)
 
----
-
-class: center, middle
-
-## Rešitev enačbe \\(T(n) = O(n) + 2 T(n / 2)\\)
 
 </textarea>
 <script src="../../pomozno/prosojnice.js"></script>
