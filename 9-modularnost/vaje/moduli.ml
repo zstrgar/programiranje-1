@@ -53,9 +53,12 @@ module type NAT = sig
 
   val eq   : t -> t -> bool
   val zero : t
-  (* Dodajte manjkajoče! *)
-  (* val to_int : t -> int *)
-  (* val of_int : int -> t *)
+  val one : t
+  val sestej : t -> t -> t
+  val odstej : t -> t -> t
+  val zmnozi : t -> t -> t
+  val to_int : t -> int 
+  val of_int : int -> t
 end
 
 (*----------------------------------------------------------------------------*]
@@ -70,10 +73,19 @@ end
 module Nat_int : NAT = struct
 
   type t = int
-  let eq x y = failwith "later"
+  let eq x y = 
+    if x = y then true
+    else false
   let zero = 0
-  (* Dodajte manjkajoče! *)
-
+  let one = 1
+  let sestej = ( + )
+  let odstej x y = max 0 (x - y)
+  let zmnozi x y = ( * ) x y
+  let to_int i = i
+  let of_int n = n
+   (* if k >= 0 then k
+    else -k  (*lahko bi dal pa recimo 0, ampak bi blo fino povedat če v uni signaturi*)
+*)
 end
 
 (*----------------------------------------------------------------------------*]
@@ -90,10 +102,47 @@ end
 
 module Nat_peano : NAT = struct
 
-  type t = unit (* To morate spremeniti! *)
-  let eq x y = failwith "later"
-  let zero = () (* To morate spremeniti! *)
-  (* Dodajte manjkajoče! *)
+  type t = Zero | S of t  
+  
+  let rec eq x y = 
+    match (x, y) with
+    | Zero, Zero -> true
+    | _, Zero -> false
+    | Zero, _ -> false
+    | S i, S j -> eq i j
+  
+  let zero = Zero
+
+  let one = S Zero
+
+  let rec sestej x y =
+    match (x, y) with
+    | Zero, Zero -> Zero
+    | x, Zero -> x
+    | Zero, y -> y
+    | S i, S j -> S (S (sestej i j))
+
+  let rec odstej x y =
+    match (x, y) with
+    | Zero, Zero -> Zero
+    | x, Zero -> x
+    | Zero, y -> Zero
+    | S i, S j -> odstej i j
+
+  let rec zmnozi x y = 
+    match (x, y) with
+    | Zero, _ -> Zero
+    | _, Zero -> Zero
+    | S i, S j -> sestej (sestej (S i) (S j)) (zmnozi i j)
+
+  let rec to_int x =
+    match x with
+    | Zero -> 0
+    | S n -> 1 + (to_int n)
+
+  let rec of_int x = 
+    if x <= 0 then Zero
+    else S (of_int (x - 1))
 
 end
 
@@ -118,7 +167,16 @@ end
  - : int = 4950
 [*----------------------------------------------------------------------------*)
 
-let sum_nat_100 (module Nat : NAT) = ()
+let sum_nat_100 (module Nat : NAT) = 
+  let sto = Nat.of_int 100 in
+  let rec sum trenutno_st acc =
+    if Nat.eq trenutno_st sto then
+      acc
+    else
+      sum (Nat.sestej trenutno_st Nat.one) (Nat.sestej trenutno_st acc)
+  in
+  Nat.to_int (sum Nat.zero Nat.zero)
+
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  Now we follow the fable told by John Reynolds in the introduction.
@@ -132,8 +190,15 @@ let sum_nat_100 (module Nat : NAT) = ()
 
 module type COMPLEX = sig
   type t
+
   val eq : t -> t -> bool
-  (* Dodajte manjkajoče! *)
+  val zero: t
+  val one: t
+  val i: t
+  val neg: t -> t
+  val konj: t -> t
+  val sestej: t -> t -> t
+  val zmnozi: t -> t -> t 
 end
 
 (*----------------------------------------------------------------------------*]
@@ -145,8 +210,22 @@ module Cartesian : COMPLEX = struct
 
   type t = {re : float; im : float}
 
-  let eq x y = failwith "later"
-  (* Dodajte manjkajoče! *)
+  let eq x y = 
+    x.re = y.re && x.im = y.im
+
+  let zero = {re = 0.; im = 0.}
+  let one = {re = 1.; im = 0.}
+  let i = {re = 0.; im = 1.}
+
+  let neg {re; im} = {re = -. re; im = -. im}
+  let konj {re; im} = {re; im = -. im}
+
+  let sestej x y = {re = x.re +. y.re; im = x.im +. y.im}
+  let zmnozi x y = 
+    let re = x.re *. y.re -. x.im *. y.im in
+    let im = x.re *. y.re +. x.im *. y.im in
+    {re; im}
+
 
 end
 
@@ -186,6 +265,54 @@ end
  [print] (print naj ponovno deluje zgolj na [(string, int) t].
 [*----------------------------------------------------------------------------*)
 
+module type DICT = sig
+  type ('key, 'value) t
+
+  val empty : ('key, 'value) t
+
+  val get : 'key -> ('key, 'value) t -> 'value option
+  val insert : 'key -> 'value -> ('key, 'value) t -> ('key, 'value) t
+  val print : (string, int) t -> unit
+end
+
+
+module Tree_Dict : DICT = struct
+  type ('key, 'value) t =
+    | Prazen
+    | Sestavljen of ('key, 'value) t * 'key * 'value * ('key, 'value) t
+
+  let empty = Prazen
+
+  let leaf key value = Sestavljen (Sestavljen, key, value, Prazen)
+  
+  let rec get k = function
+    | Prazen -> None
+    | Sestavljen(levo, k', v, desno) -> 
+        if k' = k then 
+          Some v
+        else if k < k' then
+          get k levo
+        else
+          get k desno 
+
+  let rec insert key value = function
+    | Prazen -> leaf key value
+    | Sestavljen (levo, k, v, desno) ->
+         if k = key then
+           Sestavljen (levo, k, value, desno)
+         else if key < k then
+           Sestavljen (insert key value levo, k, v, desno)
+         else
+           Sestavljen (levo, k, v, insert key value desno)
+  
+  let rec print = function
+  | Prazen -> ()
+  | Sestavljen (levo, k, v, desno) -> (
+      print levo;
+      print_string(k ^ " : " ); print_int v; print_string "\n";
+      print desno)
+
+end
 
 (*----------------------------------------------------------------------------*]
  Funkcija [count (module Dict) list] prešteje in izpiše pojavitve posameznih
@@ -198,4 +325,17 @@ end
  - : unit = ()
 [*----------------------------------------------------------------------------*)
 
-let count (module Dict : DICT) list = ()
+let count (module Dict : DICT) list = 
+  let rec stevec dict = function
+     | [] -> Dict.print dict
+     | x :: xs ->
+      let nov_stevec = 
+        match Dict.get x dict with
+        | Some x -> x + 1
+        | None -> 1
+      in
+      let nov_slovar = Dict.insert x nov_stevec dict in
+      stevec nov_slovar xs
+   in
+   stevec Dict.prazen list
+
