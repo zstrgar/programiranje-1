@@ -8,9 +8,28 @@ from functools import lru_cache
 # rezultat [2, 3, 4, 4, 6, 7, 8, 9].
 ###############################################################################
 
-
 def najdaljse_narascajoce_podzaporedje(sez):
-    return None
+    #pomozna
+    @lru_cache(maxsize=None)
+    def najdlajse(spodnja_meja, i):
+        if i >= len(sez):
+            return []
+        elif sez[i] < spodnja_meja:
+            return najdlajse(spodnja_meja, i + 1)
+        else:
+            z_prvim = [sez[i]] + najdlajse(sez[i], i + 1)
+            brez_prvega = najdlajse(spodnja_meja, i + 1)
+            if len(z_prvim) > len(brez_prvega):
+                return z_prvim
+            else:
+                return brez_prvega
+    if len(sez) == 0:
+            return []
+    else:
+        return najdlajse(sez[0], 0)
+
+            
+         
 
 ###############################################################################
 # Nepreviden študent je pustil robotka z umetno inteligenco nenadzorovanega.

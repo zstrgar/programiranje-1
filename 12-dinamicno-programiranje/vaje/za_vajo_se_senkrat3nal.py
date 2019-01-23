@@ -33,38 +33,16 @@ articles = [
 def best_value(articles, max_w):
     @lru_cache(maxsize=None)
     def best_val(w):
-        options = []  #seznam v katerega si shranjujejmo sprotne vrednosti  
-        for item in articles:
-            (name, price, weight) = item
-            if w - weight < 0:
+        opcije = []
+        for izdelek in articles:
+            (ime, cena, teza) = izdelek
+            if w - teza < 0:
                 pass
             else:
-                option = best_val(w - weight) + price
-                options.append(option)
-        if options:
-            return max(options)
-        else:
-            return 0
-    return best_val(max_w)
-
-#print(best_val(articles, 1))
-
-#težji del, vsako stvar lahko izbereš natanko enkrat, popravt bo treba kodo.
-
-def best_value_uniqe(articles, max_w):
-    @lru_cache(maxsize=None)
-    def best_val(w, taken):  #taken nam pove kateri elementi so bli že izbrani - taken je string, kjer taken[n] = "0" označuje, da n-ti elemnt še ni bil izbran
-        opcije = []  #seznam v katerega si shranjujejmo sprotne vrednosti  
-        for i, item in enumerate(articles):
-            (name, price, weight) = item
-            if w - weight < 0 or taken[i] == "0":
-                pass
-            else:
-                new_taken = taken[:i] + "1" + taken[i+1:]
-                option = best_val(w - weight) + price
-                options.append(option)
-        if options:
-            return max(options)
+                option = best_val(w - teza) + cena
+                opcije.add(option)
+        if opcije:
+            return max(opcije)
         else:
             return 0
     return best_val(max_w)
