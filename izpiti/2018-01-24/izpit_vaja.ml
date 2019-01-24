@@ -2,10 +2,19 @@
 
 (*a*)
 
-
+let rec izpisi_vsa_stevila sez =
+  match sez with
+  | [] -> ()
+  | x :: xs -> print_int x; izpisi_vsa_stevila xs
 
 (*b*)
 
+let rec map2_opt f sez1 sez2 =
+  match sez1, sez2 with
+  | (_, []) -> None
+  | ([], _) -> None
+  | (x :: xs, y :: ys) -> 
+      Some ((f x y) :: (map2_opt f xs ys))
 
 (* 2. NALOGA *)
 
@@ -49,6 +58,7 @@ let rec preveri filter_tree =
         false 
   *)
 
+  (*
 (* 3. NALOGA *)
 type vektor = int * int
 type matrika = int * int * int * int
@@ -94,3 +104,5 @@ module Funkcija : Linearna = struct
   let iz_funkcije f = f
   let kompozitum f g = fun x -> f (g x)
 end
+
+*)
